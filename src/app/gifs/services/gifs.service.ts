@@ -4,7 +4,12 @@ import { Gif, SearchResponse } from '../interfaces/gifs.interfaces';
 
 @Injectable({providedIn: 'root'})
 export class GifsService {
-  constructor( private http:HttpClient) { }
+  constructor( private http:HttpClient) {
+
+    this.loadLocalStorage();
+    console.log('Gifs service ready')
+
+   }
 
   public gifList: Gif[]=[];
   private apikey: string = 'hd6NYZ2qzOwXdyH9exRn2tzrawQkkpHf'
@@ -30,6 +35,19 @@ export class GifsService {
 
     // Se limita al arreglo a tener 10 posiciones unicamente
     this._tagsHistory = this._tagsHistory.splice(0,10);
+
+    //Guarda en el local Storage las entradas de busqueda del usuario
+    this.saveLocalStorage();
+  }
+
+  private saveLocalStorage():void{
+    localStorage.setItem('history',JSON.stringify(this._tagsHistory))
+  }
+
+  private loadLocalStorage():void{
+    if(!localStorage.getItem('history')) return;
+    this._tagsHistory = JSON.parse(localStorage.getItem('history')!)
+    this.searchTag(this.tagsHistory[0])
   }
 
   searchTag( tag:string ):void{
